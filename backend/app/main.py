@@ -33,7 +33,6 @@ def warm_up_rag() -> None:
 async def lifespan(_: FastAPI):
     settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     settings.INDEX_DIR.mkdir(parents=True, exist_ok=True)
-    threading.Thread(target=warm_up_rag, daemon=True).start()
     yield
 
 
