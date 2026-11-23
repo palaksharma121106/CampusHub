@@ -54,7 +54,7 @@ def build_record_passages(db: Session) -> list[RecordPassage]:
 
     for u in db.scalars(select(m.Syllabus)):
         add(RecordPassage(f"syllabus:{u.id}", "Syllabus", f"{u.course_code} Unit {u.unit_number}", _join(
-            f"Syllabus of {u.course_code} {u.course_title}, Unit {u.unit_number}: {u.title}. Topics: {u.topics}.",
+            f"Syllabus of {u.course_code} {u.course_title}, Unit {u.unit_number}: {u.title}. Topics: {u.topics.rstrip('.')}.",
             f"Teaching hours: {u.hours}." if u.hours else None,
             f"Reference books: {u.reference_books}." if u.reference_books else None), "/app/syllabus"))
 

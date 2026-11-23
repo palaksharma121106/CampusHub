@@ -1,5 +1,6 @@
 """RAG pipeline: index documents + database records in FAISS, retrieve, and generate grounded answers."""
 import logging
+import re
 import threading
 from dataclasses import asdict, dataclass
 
@@ -14,6 +15,40 @@ from app.rag.records import RecordPassage, build_record_passages
 from app.rag.vector_store import FaissStore
 
 log = logging.getLogger(__name__)
+
+
+STOPWORDS = set("""a an the is are was were be been of for to in on at by with and or what which who whom whose when where
+why how do does did can could should would will i me my we our you your it its this that these those there any about
+from as tell please give list show find much many some all available provide information details""".split())
+SYNONYMS = {"hod": ["head", "department"], "doctor": ["medical", "physician"], "timing": ["timings", "hours"],
+            "timings": ["hours"], "fee": ["fees"], "fees": ["fee"], "hostel": ["hostels"], "girls": ["girl", "women"],
+            "boys": ["boy", "men"], "cse": ["computer", "science"]}
+
+
+def _stem(word: str) -> str:
+    for suffix in ("ing", "es", "s"):
+        if len(word) > 4 and word.endswith(suffix):
+            return word[: -len(suffix)]
+    return word
+
+
+def _words(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower().replace("b.tech", "btech"))
+
+
+def query_terms(text: str) -> set[str]:
+    words = [w for w in _words(text) if w not in STOPWORDS]
+    expanded = set(words)
+    for w in words:
+        expanded.update(SYNONYMS.get(w, []))
+    return {_stem(w) for w in expanded if len(w) > 1}
+
+
+def keyword_overlap(terms: set[str], text: str) -> float:
+    """Fraction of query keywords that occur in the passage."""
+    if not terms:
+        return 0.0
+    return len(terms & {_stem(w) for w in _words(text)}) / len(terms)
 
 
 @dataclass
@@ -87,11 +122,14 @@ class RagPipeline:
 
     # ----- query -----
     def retrieve(self, db: Session, question: str, k: int | None = None) -> list[Source]:
+        """Hybrid retrieval: dense FAISS similarity re-ranked with keyword overlap."""
         k = k or settings.RETRIEVAL_TOP_K
+        pool = k * 4
         qv = self.embedder.embed([question])[0]
+        terms = query_terms(question)
         candidates: list[Source] = []
 
-        doc_hits = self.documents.search(qv, k)
+        doc_hits = self.documents.search(qv, pool)
         if doc_hits:
             chunk_map = {
                 c.id: c
@@ -106,18 +144,26 @@ class RagPipeline:
                     doc = chunk.document
                     bonus = 0.03 if doc.is_verified else 0.0
                     candidates.append(Source(0, "document", doc.title, doc.category, chunk.page_number,
-                                             round(score + bonus, 4), chunk.content, document_id=doc.id))
+                                             score + bonus, chunk.content, document_id=doc.id))
 
         with self._records_lock:
             passages = self._record_passages
-            for idx, score in self.records.search(qv, k):
+            for idx, score in self.records.search(qv, pool):
                 if idx < len(passages):
                     p = passages[idx]
-                    candidates.append(Source(0, "database", p.title, p.section, None, round(score, 4), p.text, link=p.link))
+                    candidates.append(Source(0, "database", p.title, p.section, None, score, p.text, link=p.link))
 
-        candidates.sort(key=lambda s: s.score, reverse=True)
-        cutoff = max(settings.MIN_RELEVANCE, candidates[0].score * 0.6) if candidates else 1.0
-        relevant = [c for c in candidates if c.score >= cutoff]
+        relevant: list[Source] = []
+        for c in candidates:
+            lexical = keyword_overlap(terms, f"{c.section} {c.title} {c.excerpt}")
+            combined = 0.65 * c.score + 0.35 * lexical
+            # Without any keyword match, only keep passages that are strongly similar semantically.
+            if combined >= settings.MIN_RELEVANCE and (lexical > 0 or c.score >= settings.MIN_RELEVANCE + 0.15):
+                c.score = round(combined, 4)
+                relevant.append(c)
+        relevant.sort(key=lambda s: s.score, reverse=True)
+        if relevant:
+            relevant = [c for c in relevant if c.score >= relevant[0].score * 0.75]
         for n, s in enumerate(relevant[:k], start=1):
             s.number = n
         return relevant[:k]

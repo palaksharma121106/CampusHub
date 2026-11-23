@@ -79,18 +79,25 @@ class ExtractiveGenerator:
 
     @classmethod
     def _terms(cls, text: str) -> set[str]:
-        return {w[:5] for w in re.findall(r"[a-z0-9]+", text.lower()) if len(w) > 2 and w not in cls._STOP}
+        words = re.findall(r"[a-z0-9]+", text.lower())
+        if "hod" in words:
+            words += ["head", "department"]
+        return {w[:5] for w in words if len(w) > 2 and w not in cls._STOP}
 
     def generate(self, question, passages, history):
         q_terms = self._terms(question)
         scored: list[tuple[float, int, str]] = []
         for rank, p in enumerate(passages[:4]):
+            # Query words already present in the source title only identify the record; the words that are
+            # not (e.g. "HOD", "timings") point to the sentence that actually answers the question.
+            specific = q_terms - self._terms(p.source)
             text = re.sub(r"(?<![.!?:])\n(?!\n)", " ", p.text)
             for sentence in re.split(r"(?<!\bRs\.)(?<!\bNo\.)(?<!\bDr\.)(?<=[.!?])\s+(?!\d)|\n+", text):
                 sentence = re.sub(r"\s+\d+\.$", "", sentence.strip())
                 if len(sentence) < 25:
                     continue
-                overlap = len(q_terms & self._terms(sentence))
+                words = self._terms(sentence)
+                overlap = len(q_terms & words) + len(specific & words)
                 if overlap:
                     scored.append((overlap - rank * 0.5, p.number, sentence))
         scored.sort(key=lambda t: -t[0])

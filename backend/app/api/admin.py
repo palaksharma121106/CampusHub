@@ -48,7 +48,7 @@ def stats(db: Session = Depends(get_db), _: User = Depends(require_admin)):
 @router.get("/analytics")
 def analytics(days: int = Query(default=14, ge=1, le=90), db: Session = Depends(get_db), _: User = Depends(require_admin)):
     since = datetime.utcnow().date() - timedelta(days=days - 1)
-    day = cast(QueryLog.created_at, Date)
+    day = func.date(QueryLog.created_at)
     rows = db.execute(
         select(day.label("d"), QueryLog.answered, func.count())
         .where(QueryLog.created_at >= since).group_by("d", QueryLog.answered)
