@@ -51,9 +51,9 @@ function AssistantPreview() {
             <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-teal-500 text-white">
               <span className="absolute inset-0 animate-ping rounded-full bg-teal-400/40" /><Mic className="relative h-5 w-5" />
             </div>
-            <div className="flex h-8 flex-1 items-center gap-[3px]">
+            <div className="flex h-8 min-w-0 flex-1 items-center gap-[3px] overflow-hidden">
               {Array.from({ length: 28 }).map((_, i) => (
-                <motion.span key={i} className="w-1 rounded-full bg-teal-300/80"
+                <motion.span key={i} className="w-1 shrink-0 rounded-full bg-teal-300/80"
                   animate={{ height: [6, 8 + ((i * 7) % 22), 6] }} transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.04 }} />
               ))}
             </div>
@@ -79,7 +79,7 @@ export default function Landing() {
       <section className="relative overflow-hidden bg-navy-950 text-white">
         <div className="grid-bg absolute inset-0 opacity-[0.07]" />
         <div className="container relative grid items-center gap-14 py-20 lg:grid-cols-[1.1fr_1fr] lg:py-28">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div className="min-w-0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-teal-200">
               <Sparkles className="h-3.5 w-3.5" /> Voice-enabled · Retrieval-augmented AI
             </span>
@@ -100,7 +100,7 @@ export default function Landing() {
               ))}
             </div>
           </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.15 }}>
+          <motion.div className="min-w-0" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.15 }}>
             <AssistantPreview />
           </motion.div>
         </div>
@@ -170,7 +170,7 @@ export default function Landing() {
               })}
             </ul>
           </motion.div>
-          <motion.div {...fade} className="rounded-2xl bg-navy-950 p-8"><AssistantPreview /></motion.div>
+          <motion.div {...fade} className="min-w-0 rounded-2xl bg-navy-950 p-4 sm:p-8"><AssistantPreview /></motion.div>
         </div>
       </section>
 

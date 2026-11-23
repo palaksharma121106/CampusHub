@@ -17,20 +17,31 @@ function inline(text: string, onCite?: (n: number) => void): ReactNode[] {
   })
 }
 
+const BULLET = /^\s*([-*•]|\d+\.)\s+/
+
 export function RichText({ text, onCite }: { text: string; onCite?: (n: number) => void }) {
   const blocks = text.trim().split(/\n{2,}/)
   return (
     <div className="space-y-2.5">
       {blocks.map((block, i) => {
-        const lines = block.split('\n').filter((l) => l.trim())
-        if (lines.length && lines.every((l) => /^\s*([-*•]|\d+\.)\s+/.test(l))) {
-          return (
-            <ul key={i} className="ml-4 list-disc space-y-1 marker:text-accent">
-              {lines.map((l, j) => <li key={j}>{inline(l.replace(/^\s*([-*•]|\d+\.)\s+/, ''), onCite)}</li>)}
-            </ul>
-          )
+        const groups: { list: boolean; lines: string[] }[] = []
+        for (const line of block.split('\n').filter((l) => l.trim())) {
+          const list = BULLET.test(line)
+          const last = groups[groups.length - 1]
+          if (last && last.list === list) last.lines.push(line)
+          else groups.push({ list, lines: [line] })
         }
-        return <p key={i}>{lines.map((l, j) => <Fragment key={j}>{j > 0 && <br />}{inline(l, onCite)}</Fragment>)}</p>
+        return (
+          <div key={i} className="space-y-1.5">
+            {groups.map((g, j) => g.list ? (
+              <ul key={j} className="ml-4 list-disc space-y-1 marker:text-accent">
+                {g.lines.map((l, k) => <li key={k}>{inline(l.replace(BULLET, ''), onCite)}</li>)}
+              </ul>
+            ) : (
+              <p key={j}>{g.lines.map((l, k) => <Fragment key={k}>{k > 0 && <br />}{inline(l, onCite)}</Fragment>)}</p>
+            ))}
+          </div>
+        )
       })}
     </div>
   )

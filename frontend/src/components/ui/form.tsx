@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { forwardRef, type ComponentPropsWithoutRef, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 
@@ -16,13 +17,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
 Textarea.displayName = 'Textarea'
 
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(({ className, children, ...props }, ref) => (
-  <select
-    ref={ref}
-    className={cn(field, 'h-10 appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2716%27%20height=%2716%27%20fill=%27none%27%20stroke=%27%2364748b%27%20stroke-width=%272%27%3E%3Cpath%20d=%27m4%206%204%204%204-4%27/%3E%3C/svg%3E")] bg-[right_0.6rem_center] bg-no-repeat pr-9', className)}
-    {...props}
-  >
-    {children}
-  </select>
+  <div className={cn('relative', className)}>
+    <select ref={ref} className={cn(field, 'h-10 w-full appearance-none pr-9')} {...props}>
+      {children}
+    </select>
+    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+  </div>
 ))
 Select.displayName = 'Select'
 
