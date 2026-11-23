@@ -92,6 +92,15 @@ class ExtractiveGenerator:
             # not (e.g. "HOD", "timings") point to the sentence that actually answers the question.
             specific = q_terms - self._terms(p.source)
             text = re.sub(r"(?<![.!?:])\n(?!\n)", " ", p.text)
+            if p.source.startswith("CampusHub database"):
+                # Structured records are short and self-contained: quote the whole record so values such as
+                # timings, fees or phone numbers are never separated from what they describe.
+                words = self._terms(text) | self._terms(p.source)
+                overlap = len(q_terms & words) + len(specific & self._terms(text))
+                if overlap:
+                    record = text if len(text) <= 420 else text[:420].rsplit(" ", 1)[0] + "…"
+                    scored.append((overlap + 1 - rank * 0.5, p.number, record))
+                continue
             for sentence in re.split(r"(?<!\bRs\.)(?<!\bNo\.)(?<!\bDr\.)(?<=[.!?])\s+(?!\d)|\n+", text):
                 sentence = re.sub(r"\s+\d+\.$", "", sentence.strip())
                 if len(sentence) < 25:
