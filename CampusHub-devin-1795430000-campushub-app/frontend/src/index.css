@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CampusHub design tokens – deep navy primary, white secondary, teal accent, soft off-white surfaces. */
+@layer base {
+  :root {
+    --background: 220 25% 97.5%;
+    --foreground: 220 60% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 60% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 60% 12%;
+    --primary: 220 59% 13%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 220 59% 13%;
+    --accent: 172 78% 35%;
+    --accent-foreground: 0 0% 100%;
+    --accent-soft: 168 70% 95%;
+    --muted: 220 22% 94%;
+    --muted-foreground: 220 12% 44%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 36 92% 48%;
+    --warning-foreground: 0 0% 100%;
+    --success: 152 60% 36%;
+    --success-foreground: 0 0% 100%;
+    --border: 220 20% 90%;
+    --input: 220 18% 86%;
+    --ring: 172 78% 35%;
+    --radius: 0.75rem;
+  }
+
+  * { @apply border-border; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { @apply bg-background text-foreground font-sans; font-feature-settings: 'cv11', 'ss01'; }
+  ::selection { @apply bg-teal-200 text-navy-900; }
+  :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
+}
+
+@layer components {
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.14em] text-accent; }
+  .surface { @apply rounded-xl border bg-card shadow-card; }
+  .nav-link { @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-navy-100/80 transition-colors hover:bg-white/5 hover:text-white; }
+  .nav-link.active { @apply bg-white/10 text-white; }
+  .grid-bg {
+    background-image: linear-gradient(to right, rgba(13,26,51,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(13,26,51,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
