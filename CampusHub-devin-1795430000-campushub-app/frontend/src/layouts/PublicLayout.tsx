@@ -2,7 +2,7 @@ import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
-import { Logo } from '@/components/brand/Logo'
+import { FullLogo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext'
 
@@ -22,16 +22,19 @@ export function PublicLayout() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b bg-card/90 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="hover:opacity-90 transition-opacity">
-            <Logo />
+        <div className="container flex h-[72px] items-center justify-between gap-4">
+          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0 hover:opacity-90 transition-opacity">
+            <FullLogo imgClassName="h-9 sm:h-12" />
+            <span className="inline-flex items-center border-l border-border pl-2.5 sm:pl-3 text-sm sm:text-base font-extrabold tracking-tight text-navy-950 whitespace-nowrap">
+              Campus<span className="text-teal-500">Hub</span>
+            </span>
           </Link>
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav className="hidden items-center gap-5 xl:gap-7 lg:flex">
             {links.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="whitespace-nowrap text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {l.label}
               </a>

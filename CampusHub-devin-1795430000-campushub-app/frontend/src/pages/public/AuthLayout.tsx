@@ -2,7 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Logo } from '@/components/brand/Logo'
+import { FullLogo, Logo } from '@/components/brand/Logo'
 
 export function AuthLayout({
   title,
@@ -41,13 +41,11 @@ export function AuthLayout({
         </div>
 
         <div className="relative my-auto max-w-md pt-8">
-          <div className="mb-6 inline-block rounded-2xl bg-white p-3 shadow-lg">
-            <img
-              src="/mody-logo.png"
-              alt="Mody University of Science and Technology"
-              className="h-14 w-auto object-contain"
-            />
-          </div>
+          <FullLogo
+            inverted
+            className="mb-6 rounded-2xl px-4 py-3 shadow-lg"
+            imgClassName="h-14 sm:h-16"
+          />
 
           <p className="eyebrow !text-teal-300">
             {aside === 'admin' ? 'Administration Portal' : 'Student & Scholar Portal'}
@@ -75,20 +73,13 @@ export function AuthLayout({
 
       <div className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
-          <div className="mb-8 flex flex-col gap-3 lg:hidden">
-            <Link to="/" className="inline-block">
-              <Logo />
-            </Link>
-            <div className="rounded-xl bg-muted/70 p-2.5 inline-flex items-center gap-3">
-              <img
-                src="/mody-logo.png"
-                alt="Mody University"
-                className="h-8 w-auto object-contain"
-              />
-              <span className="text-[11px] font-medium text-muted-foreground leading-tight">
-                Mody University of Science and Technology
+          <div className="mb-8 flex flex-col items-start gap-3 lg:hidden">
+            <Link to="/" className="inline-flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+              <FullLogo imgClassName="h-10" />
+              <span className="border-l border-border pl-2.5 text-sm font-extrabold tracking-tight text-navy-950 whitespace-nowrap">
+                Campus<span className="text-teal-500">Hub</span>
               </span>
-            </div>
+            </Link>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>

@@ -137,7 +137,7 @@ export default function Login({ portal = 'student' }: { portal?: 'student' | 'ad
             {error}
           </div>
         )}
-        <Field label="Email address" htmlFor="email">
+        <Field label="Email address" htmlFor="email" required>
           <Input
             id="email"
             type="email"
@@ -148,7 +148,7 @@ export default function Login({ portal = 'student' }: { portal?: 'student' | 'ad
             placeholder={isAdmin ? 'admin@campushub.demo' : 'aarav.student@campushub.demo'}
           />
         </Field>
-        <Field label="Password" htmlFor="password">
+        <Field label="Password" htmlFor="password" required>
           <div className="relative">
             <Input
               id="password"

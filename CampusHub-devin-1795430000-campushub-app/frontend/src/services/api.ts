@@ -42,5 +42,6 @@ export function errorMessage(error: unknown, fallback = 'Something went wrong. P
       return field ? `${field.replace(/_/g, ' ')}: ${first.msg}` : (first.msg ?? fallback)
     }
   }
+  if (error instanceof Error && error.message) return error.message
   return fallback
 }

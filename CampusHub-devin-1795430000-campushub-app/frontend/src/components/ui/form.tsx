@@ -31,12 +31,15 @@ export const Label = forwardRef<HTMLLabelElement, ComponentPropsWithoutRef<typeo
 ))
 Label.displayName = 'Label'
 
-export function Field({ label, htmlFor, hint, error, children, className }: {
-  label: string; htmlFor?: string; hint?: string; error?: string; children: React.ReactNode; className?: string
+export function Field({ label, htmlFor, hint, error, required, children, className }: {
+  label: string; htmlFor?: string; hint?: string; error?: string; required?: boolean; children: React.ReactNode; className?: string
 }) {
   return (
     <div className={cn('space-y-1.5', className)}>
-      <Label htmlFor={htmlFor}>{label}</Label>
+      <div className="flex items-center gap-0.5">
+        <Label htmlFor={htmlFor}>{label}</Label>
+        {required && <span className="text-sm font-semibold leading-none text-destructive" aria-hidden="true">*</span>}
+      </div>
       {children}
       {error ? <p className="text-xs text-destructive">{error}</p> : hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
     </div>

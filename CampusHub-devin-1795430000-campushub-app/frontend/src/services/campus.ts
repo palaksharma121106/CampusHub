@@ -28,11 +28,47 @@ export const authApi = {
     api.post('/auth/change-password', { current_password, new_password }),
 }
 
+export const FALLBACK_REGISTRATION_OPTIONS: {
+  departments: { id: number; name: string }[]
+  programs: { id: number; name: string; department_id: number }[]
+} = {
+  departments: [
+    { id: 1, name: 'Computer Science & Engineering' },
+    { id: 2, name: 'Electronics & Communication Engineering' },
+    { id: 3, name: 'Mechanical Engineering' },
+    { id: 4, name: 'School of Management' },
+    { id: 5, name: 'Applied Sciences & Humanities' },
+    { id: 6, name: 'School of Legal Studies' },
+  ],
+  programs: [
+    { id: 1, name: 'B.Tech Computer Science & Engineering', department_id: 1 },
+    { id: 2, name: 'B.Tech CSE (Artificial Intelligence & ML)', department_id: 1 },
+    { id: 3, name: 'M.Tech Computer Science', department_id: 1 },
+    { id: 4, name: 'Ph.D. Computer Science', department_id: 1 },
+    { id: 5, name: 'B.Tech Electronics & Communication', department_id: 2 },
+    { id: 6, name: 'B.Tech Mechanical Engineering', department_id: 3 },
+    { id: 7, name: 'Bachelor of Business Administration (BBA)', department_id: 4 },
+    { id: 8, name: 'Master of Business Administration (MBA)', department_id: 4 },
+    { id: 9, name: 'B.Sc. (Hons.) Applied Sciences', department_id: 5 },
+    { id: 10, name: 'M.Sc. Applied Sciences', department_id: 5 },
+    { id: 11, name: 'B.A. LL.B. (Hons.)', department_id: 6 },
+    { id: 12, name: 'BBA LL.B. (Hons.)', department_id: 6 },
+  ],
+}
+
 export const publicApi = {
   overview: () => api.get<Record<string, number | string>>('/public/overview').then((r) => r.data),
-  registrationOptions: () =>
-    api.get<{ departments: { id: number; name: string }[]; programs: { id: number; name: string; department_id: number }[] }>(
-      '/public/registration-options').then((r) => r.data),
+  registrationOptions: async () => {
+    try {
+      const data = await api
+        .get<typeof FALLBACK_REGISTRATION_OPTIONS>('/public/registration-options', { timeout: 5000 })
+        .then((r) => r.data)
+      if (data?.departments?.length) return data
+    } catch {
+      // Fallback to seeded university departments & programmes when backend is offline
+    }
+    return FALLBACK_REGISTRATION_OPTIONS
+  },
   search: (q: string) => api.get<{ query: string; results: SearchResult[] }>('/search', { params: { q } }).then((r) => r.data),
 }
 

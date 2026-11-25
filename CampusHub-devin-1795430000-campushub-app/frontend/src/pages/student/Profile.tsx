@@ -60,7 +60,7 @@ export default function Profile() {
             <CardContent>
               <form onSubmit={save} className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Full name" htmlFor="pname"><Input id="pname" value={name} onChange={(e) => setName(e.target.value)} minLength={2} required /></Field>
+                  <Field label="Full name" htmlFor="pname" required><Input id="pname" value={name} onChange={(e) => setName(e.target.value)} minLength={2} required /></Field>
                   <Field label="Phone" htmlFor="pphone"><Input id="pphone" value={phone} onChange={(e) => setPhone(e.target.value)} /></Field>
                 </div>
                 <div className="flex items-center gap-3"><Button type="submit" loading={saving}>Save changes</Button>{msg && <Notice {...msg} />}</div>
@@ -71,10 +71,10 @@ export default function Profile() {
             <CardHeader><CardTitle className="flex items-center gap-2"><KeyRound className="h-4 w-4" />Change password</CardTitle></CardHeader>
             <CardContent>
               <form onSubmit={changePw} className="space-y-4">
-                <Field label="Current password" htmlFor="cur"><Input id="cur" type="password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} required autoComplete="current-password" /></Field>
+                <Field label="Current password" htmlFor="cur" required><Input id="cur" type="password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} required autoComplete="current-password" /></Field>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="New password" htmlFor="new" hint="Min. 8 characters with a letter and a number"><Input id="new" type="password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} required autoComplete="new-password" /></Field>
-                  <Field label="Confirm new password" htmlFor="conf"><Input id="conf" type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} required autoComplete="new-password" /></Field>
+                  <Field label="New password" htmlFor="new" required hint="Min. 8 characters with a letter and a number"><Input id="new" type="password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} required autoComplete="new-password" /></Field>
+                  <Field label="Confirm new password" htmlFor="conf" required><Input id="conf" type="password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} required autoComplete="new-password" /></Field>
                 </div>
                 <div className="flex items-center gap-3"><Button type="submit" variant="outline" loading={pwSaving}>Update password</Button>{pwMsg && <Notice {...pwMsg} />}</div>
               </form>

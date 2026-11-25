@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { Logo } from '@/components/brand/Logo'
+import { FullLogo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext'
 import { useAsync } from '@/hooks/useAsync'
@@ -102,16 +102,17 @@ export default function Landing() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-950 text-white">
         <div className="grid-bg absolute inset-0 opacity-[0.07]" />
-        <div className="container relative grid items-center gap-14 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
+        <div className="container relative grid items-center gap-14 py-14 lg:grid-cols-[1.1fr_1fr] lg:py-20">
           <motion.div className="min-w-0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-500/10 px-3.5 py-1 text-xs font-semibold text-teal-200">
-                <Sparkles className="h-3.5 w-3.5 text-teal-300" />
-                MODY UNIVERSITY OF SCIENCE AND TECHNOLOGY
-              </span>
-              <span className="hidden sm:inline-flex rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] text-navy-300">
-                Lakshmangarh · Rajasthan
-              </span>
+            <div className="mb-5">
+              <FullLogo inverted imgClassName="h-11 sm:h-12" className="rounded-xl px-3.5 py-2 shadow-md" />
+            </div>
+
+            <div className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-full border border-teal-400/30 bg-teal-500/10 px-3.5 py-1.5 text-xs font-semibold text-teal-200">
+              <Sparkles className="h-3.5 w-3.5 shrink-0 text-teal-300" />
+              <span>MODY UNIVERSITY OF SCIENCE AND TECHNOLOGY</span>
+              <span className="hidden sm:inline text-teal-400/50">·</span>
+              <span className="hidden sm:inline font-medium text-navy-200">Lakshmangarh, Rajasthan</span>
             </div>
 
             <h1 className="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.2rem]">
@@ -386,9 +387,11 @@ export default function Landing() {
             <p className="mt-3 text-sm text-muted-foreground">
               A premier women's university located in Lakshmangarh, Rajasthan, committed to excellence in science, technology, management, and research with world-class residential and sports amenities.
             </p>
-            <div className="mt-6 rounded-xl border bg-card p-4">
-              <img src="/mody-logo.png" alt="Mody University" className="h-12 w-auto object-contain" />
-              <p className="mt-2 text-xs text-muted-foreground">A Leading Women's University · Lakshmangarh, Rajasthan</p>
+            <div className="mt-6 rounded-xl border bg-card p-4 shadow-xs">
+              <FullLogo imgClassName="h-14 sm:h-16 w-auto max-w-full" />
+              <p className="mt-3 border-t pt-2.5 text-xs font-medium text-muted-foreground">
+                NAAC Grade A+ Accredited (3.43 / 4.00) · Lakshmangarh, Rajasthan
+              </p>
             </div>
           </div>
           {[
@@ -423,9 +426,14 @@ export default function Landing() {
 
       <footer className="border-t bg-card">
         <div className="container flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <Logo />
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          <div className="flex flex-col items-start gap-3">
+            <div className="flex items-center gap-3">
+              <FullLogo imgClassName="h-10 sm:h-11" />
+              <span className="border-l border-border pl-3 text-base font-extrabold tracking-tight text-navy-950 whitespace-nowrap">
+                Campus<span className="text-teal-500">Hub</span>
+              </span>
+            </div>
+            <p className="max-w-sm text-sm text-muted-foreground">
               Mody University of Science and Technology – Intelligent voice-enabled campus assistant and student information portal.
             </p>
           </div>

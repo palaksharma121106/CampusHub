@@ -48,9 +48,17 @@ function Sidebar({ nav, onNavigate, portal }: { nav: NavGroup[]; onNavigate?: ()
           </div>
         ))}
       </nav>
-      <div className="border-t border-white/10 p-4 text-[11px] text-navy-300/80 leading-relaxed">
-        <p className="font-semibold text-white/90">Mody University</p>
-        <p className="text-navy-400">Lakshmangarh, Rajasthan</p>
+      <div className="border-t border-white/10 p-4">
+        <div className="rounded-xl bg-white px-3 py-2 shadow-xs">
+          <img
+            src="/mody-logo-badge.png"
+            alt="Mody University of Science and Technology · NAAC Grade A+"
+            className="h-12 w-full object-contain"
+          />
+        </div>
+        <p className="mt-2 text-center text-[11px] font-medium text-navy-300/80">
+          Lakshmangarh · Rajasthan
+        </p>
       </div>
     </div>
   )
@@ -120,10 +128,10 @@ export function AppShell({ nav, portal }: { nav: NavGroup[]; portal: 'student' |
           </Button>
 
           {/* College pill branding in top bar */}
-          <div className="hidden items-center gap-2 rounded-lg border bg-muted/60 px-2.5 py-1 text-xs md:flex">
-            <img src="/mody-emblem.png" alt="" className="h-4 w-4 rounded-full" />
-            <span className="font-semibold text-foreground">Mody University</span>
-            <span className="text-muted-foreground">· Science & Technology</span>
+          <div className="hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border bg-muted/60 px-3 py-1.5 text-xs md:flex">
+            <img src="/mody-emblem.png" alt="" className="h-4 w-4 shrink-0 rounded-full object-contain" />
+            <span className="font-semibold leading-none text-foreground">Mody University</span>
+            <span className="leading-none text-muted-foreground">· Science & Technology</span>
           </div>
 
           {portal === 'student' ? (

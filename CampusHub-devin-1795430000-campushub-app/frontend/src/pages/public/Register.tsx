@@ -18,6 +18,8 @@ export function validateRegistration(f: typeof initial) {
   if (f.full_name.trim().length < 2) errors.full_name = 'Enter your full name'
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) errors.email = 'Enter a valid email address'
   if (!/^[A-Za-z0-9\-/]{3,30}$/.test(f.enrollment_no)) errors.enrollment_no = '3–30 letters, digits, "-" or "/"'
+  if (!f.department_id) errors.department_id = 'Select your department'
+  if (!f.program_id) errors.program_id = 'Select your programme'
   if (f.password.length < 8 || !/\d/.test(f.password) || !/[A-Za-z]/.test(f.password)) errors.password = 'At least 8 characters with a letter and a number'
   if (f.confirm !== f.password) errors.confirm = 'Passwords do not match'
   return errors
@@ -32,7 +34,14 @@ export default function Register() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const errors = useMemo(() => validateRegistration(form), [form])
-  const set = (k: keyof typeof initial) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value, ...(k === 'department_id' ? { program_id: '' } : {}) }))
+  const set = (k: keyof typeof initial) => (e: { target: { value: string } }) =>
+    setForm((f) => {
+      if (k === 'program_id' && e.target.value && !f.department_id) {
+        const matched = options?.programs.find((p) => String(p.id) === e.target.value)
+        return { ...f, program_id: e.target.value, department_id: matched ? String(matched.department_id) : f.department_id }
+      }
+      return { ...f, [k]: e.target.value, ...(k === 'department_id' ? { program_id: '' } : {}) }
+    })
   const programs = options?.programs.filter((p) => !form.department_id || String(p.department_id) === form.department_id) ?? []
 
   const submit = async (e: FormEvent) => {
@@ -59,37 +68,40 @@ export default function Register() {
   return (
     <AuthLayout title="Create your student account" subtitle="Register with your college details to access CampusHub.">
       <form onSubmit={submit} className="space-y-4" noValidate>
+        <p className="text-xs text-muted-foreground">
+          Fields marked with <span className="font-semibold text-destructive">*</span> are required.
+        </p>
         {error && <div role="alert" className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div>}
-        <Field label="Full name" htmlFor="full_name" error={err('full_name')}><Input id="full_name" value={form.full_name} onChange={set('full_name')} autoComplete="name" /></Field>
+        <Field label="Full name" htmlFor="full_name" required error={err('full_name')}><Input id="full_name" value={form.full_name} onChange={set('full_name')} autoComplete="name" placeholder="e.g. Ananya Sharma" required /></Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Email address" htmlFor="email" error={err('email')}><Input id="email" type="email" value={form.email} onChange={set('email')} autoComplete="email" /></Field>
-          <Field label="Enrollment number" htmlFor="enrollment_no" error={err('enrollment_no')}><Input id="enrollment_no" value={form.enrollment_no} onChange={set('enrollment_no')} placeholder="e.g. 22BCS101" /></Field>
+          <Field label="Email address" htmlFor="email" required error={err('email')}><Input id="email" type="email" value={form.email} onChange={set('email')} autoComplete="email" placeholder="name@modyuniversity.ac.in" required /></Field>
+          <Field label="Enrollment number" htmlFor="enrollment_no" required error={err('enrollment_no')}><Input id="enrollment_no" value={form.enrollment_no} onChange={set('enrollment_no')} placeholder="e.g. 22BCS101" required /></Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Department" htmlFor="department_id">
-            <Select id="department_id" value={form.department_id} onChange={set('department_id')}>
+          <Field label="Department" htmlFor="department_id" required error={err('department_id')}>
+            <Select id="department_id" value={form.department_id} onChange={set('department_id')} required>
               <option value="">Select department</option>
               {options?.departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </Select>
           </Field>
-          <Field label="Programme" htmlFor="program_id">
-            <Select id="program_id" value={form.program_id} onChange={set('program_id')}>
+          <Field label="Programme" htmlFor="program_id" required error={err('program_id')}>
+            <Select id="program_id" value={form.program_id} onChange={set('program_id')} required>
               <option value="">Select programme</option>
               {programs.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </Select>
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Year of study" htmlFor="year_of_study">
-            <Select id="year_of_study" value={form.year_of_study} onChange={set('year_of_study')}>
+          <Field label="Year of study" htmlFor="year_of_study" required>
+            <Select id="year_of_study" value={form.year_of_study} onChange={set('year_of_study')} required>
               {[1, 2, 3, 4, 5].map((y) => <option key={y} value={y}>Year {y}</option>)}
             </Select>
           </Field>
-          <Field label="Phone (optional)" htmlFor="phone"><Input id="phone" value={form.phone} onChange={set('phone')} autoComplete="tel" /></Field>
+          <Field label="Phone (optional)" htmlFor="phone"><Input id="phone" value={form.phone} onChange={set('phone')} autoComplete="tel" placeholder="+91 98XXXXXXXX" /></Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Password" htmlFor="password" error={err('password')}><Input id="password" type="password" value={form.password} onChange={set('password')} autoComplete="new-password" /></Field>
-          <Field label="Confirm password" htmlFor="confirm" error={err('confirm')}><Input id="confirm" type="password" value={form.confirm} onChange={set('confirm')} autoComplete="new-password" /></Field>
+          <Field label="Password" htmlFor="password" required hint="Min. 8 chars with letter & number" error={err('password')}><Input id="password" type="password" value={form.password} onChange={set('password')} autoComplete="new-password" required /></Field>
+          <Field label="Confirm password" htmlFor="confirm" required error={err('confirm')}><Input id="confirm" type="password" value={form.confirm} onChange={set('confirm')} autoComplete="new-password" required /></Field>
         </div>
         <Button type="submit" className="w-full" size="lg" loading={loading}>Create account</Button>
       </form>
